@@ -2,7 +2,9 @@
   (:require [google.oauth :as oauth]
             [google.core :refer [json]]
             [ring.util.codec :as codec]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clj-http.client :as client]
+            [clojure.java.io :as java]))
 
 
 (defn query
@@ -32,19 +34,23 @@
   [token folder-id]
   (:items (json (str "https://www.googleapis.com/drive/v2/files/" folder-id "/children") token)))
 
-(def client-credentials {:client-id ""
-                         :client-secret ""
-                         :redirect-uri ""})
 
-(def scopes [])
+(defn download
+  [token directory g-file]
+  (let [file-stream-response (client/get
+                              (str "https://www.googleapis.com/drive/v2/files/" (:id g-file) "?alt=media")
+                              {:headers
+                               {:Authorization (str "Bearer " (:access_token token))}
+                               :as :stream})]
+    (try
+      (do
+        (java/copy (:body file-stream-response)
+                   (java/file (str directory (:title g-file))))
+        true)
+      (catch Exception e false))))
 
 
-(oauth/consent-url client-credentials scopes)
 
-(def token (oauth/access-token client-credentials "" "authorization_code"))
 
-(files token
-        [[:in "'{folder-id}'" "parents" true]
-         [:= "trashed" false true]])
 
-(children token "{folder-id}")
+
