@@ -7,9 +7,15 @@
 
 A Clojure library designed to ... well, that part is up to you.
 
-## Usage
+## Installation
 
-FIXME
+```
+[clj-google "x.x.x"] ;See clojars version
+```
+
+## Usages
+
+* [Google matrix API](https://github.com/xerp/clj-google/blob/master/docs/matrix.md)
 
 ## License
 
