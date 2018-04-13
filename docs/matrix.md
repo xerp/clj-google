@@ -2,7 +2,7 @@
 
 ## Usage
 
-```
+```clojure
 (ns example
     (:require [clj-google.matrix :as matrix]))  
   
