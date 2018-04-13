@@ -1,4 +1,4 @@
-(ns google.core
+(ns clj-google.core
   (:require [clj-http.client :as client]
             [clj-json.core :as json]))
 

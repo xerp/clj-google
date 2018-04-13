@@ -1,4 +1,4 @@
-(ns google.oauth
+(ns clj-google.oauth
   (:require [clojure.string :as string]
             [clj-http.client :as client]
             [clj-json.core :as json]))

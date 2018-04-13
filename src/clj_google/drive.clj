@@ -1,6 +1,6 @@
-(ns google.drive
-  (:require [google.oauth :as oauth]
-            [google.core :refer [json]]
+(ns clj-google.drive
+  (:require [clj-google.oauth :as oauth]
+            [clj-google.core :refer [json]]
             [ring.util.codec :as codec]
             [clojure.string :as string]
             [clj-http.client :as client]
