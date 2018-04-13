@@ -1,0 +1,5 @@
+{:api {:url                   "https://maps.googleapis.com/maps/api/distancematrix/json?"
+       :unit                  "international"
+       :traffic-model         "pessimistic"
+       :coordinate-separator  ","
+       :coordinates-separator "|"}}
