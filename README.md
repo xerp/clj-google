@@ -9,7 +9,7 @@ A Clojure library designed to ... well, that part is up to you.
 
 ## Installation
 
-```
+```clojure
 [clj-google "x.x.x"] ;See clojars version
 ```
 
