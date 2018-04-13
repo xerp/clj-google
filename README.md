@@ -5,7 +5,7 @@
 [![Dependencies Status](https://versions.deps.co/xerp/clj-google/status.png)](https://versions.deps.co/xerp/clj-google)
 
 
-A Clojure library designed to ... well, that part is up to you.
+This library is a compilation of google api's toolbox.
 
 ## Installation
 

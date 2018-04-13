@@ -1,5 +1,5 @@
 (ns clj-google.matrix
-  (:require [clj-google.core :refer :all]
+  (:require [clj-google.data :refer :all]
             [clj-http.client :as http-client]
             [atmos-kernel.configuration :refer [read-edn]]
             [clojure.string :refer [join]]))
