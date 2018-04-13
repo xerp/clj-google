@@ -10,9 +10,9 @@
 (def ^:private matrix-api (-> :matrix read-edn :api))
 
 (def ^:private api-url (:url matrix-api))
-
 (def ^:private coordinate-separator (:coordinate-separator matrix-api))
 (def ^:private coordinates-separator (:coordinates-separator matrix-api))
+(def ^:private default-values (:defaults matrix-api))
 
 (def ^:dynamic *api-key* nil)
 ; ----------------------------------------------------
@@ -34,8 +34,9 @@
   (join coordinates-separator (map stringify-coordinate coordinates)))
 
 (defn- make-coordinates
+  "Make coordinates checking if coordinates is a vector or not"
   [coordinates]
-  (if (vector? coordinates)
+  (if (every? vector? coordinates)
     (stringify-coordinates coordinates)
     (stringify-coordinate coordinates)))
 
@@ -51,7 +52,10 @@
          departure-time (str "departure_time=" departure-time)]
      (join "&" [api-url api-key departure-time unit-system traffic-model origin destinations])))
   ([origins destinations]
-   (matrix-url origins destinations (:unit matrix-api) (:traffic-model matrix-api) (:departure-time matrix-api))))
+   (matrix-url origins destinations
+               (:unit default-values)
+               (:traffic-model default-values)
+               (:departure-time default-values))))
 
 (defn matrix-data
   "Retrieve data from matrix-api"
@@ -62,6 +66,11 @@
             http-data (-> http-body :rows first :elements)]
         http-data)
       false)
-    (catch Exception e
-      false)))
+    (catch Exception e false)))
 
+
+(defmacro with-api-key
+  "Using the api key provided by google, query the matrix api"
+  [api-key & body]
+  `(binding [*api-key* ~api-key]
+     (do ~@body)))
