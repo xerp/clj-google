@@ -1,23 +1,15 @@
 (ns clj-google.auth
-  (:require [clj-http.client :as client]
-            [cemerick.url :refer [url url-encode]]))
-
-;(defmacro transform-fn
-;  [variable]
-;  `(str (string/replace (name '~variable) #"-" "_") "=" ~variable))
-;
-;(defmacro transform-vector-fn
-;  [variable]
-;  `(let
-;     [transformed# (transform-fn ~variable)
-;      splited# (string/split transformed# #"=")]
-;     (vector (first splited#) (second splited#))))
+  (:require [clj-http.client :as http]
+            [cemerick.url :refer [url url-encode]]
+            [clojure.string :as string]
+            [clojure.data.json :as json])
+  (:import (clojure.lang ExceptionInfo)))
 
 
 (defn consent-url
   [credentials response-type access-type]
-  (let [google-auth-url "https://accounts.google.com/o/oauth2/v2/auth"
-        consent-url (assoc (url google-auth-url)
+  (let [request-url "https://accounts.google.com/o/oauth2/v2/auth"
+        consent-url (assoc (url request-url)
                       :query {:client_id     (:client-id credentials)
                               :redirect_uri  (:redirect-uri credentials)
                               :scope         (:scopes credentials)
@@ -27,19 +19,20 @@
 
 
 
-;(defn access-token
-;  [client-credentials code grant-type]
-;  (let [request-url "https://www.googleapis.com/oauth2/v3/token"
-;        client-id (:client-id client-credentials)
-;        client-secret (:client-secret client-credentials)
-;        redirect-uri (:redirect-uri client-credentials)
-;        form-params (into (hash-map) [(transform-vector-fn code)
-;                                      (transform-vector-fn client-id)
-;                                      (transform-vector-fn client-secret)
-;                                      (transform-vector-fn redirect-uri)
-;                                      (transform-vector-fn grant-type)])
-;        response (try
-;                   (client/post request-url {:form-params form-params})
-;                   (catch Exception e ""))
-;        response-body (json/parse-string (:body response "") true)]
-;    response-body))
+(defn access-token
+  [credentials grant-type code]
+  (let [request-url "https://www.googleapis.com/oauth2/v4/token"
+        grant-type-str (string/replace (name grant-type) #"-" "_")
+        data {:client_id                       (:client-id credentials)
+              :client_secret                   (:client-secret credentials)
+              :redirect_uri                    (:redirect-uri credentials)
+              :grant_type                      grant-type-str
+              (case grant-type
+                :authorization-code :code
+                :refresh-token :refresh_token) code}]
+    (try
+      (if-let [response (http/post request-url {:form-params data})]
+        (let [response-body (:body response)
+              response-data (json/read-str response-body :key-fn keyword)]
+          response-data))
+      (catch ExceptionInfo e false))))
