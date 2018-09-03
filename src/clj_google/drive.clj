@@ -1,6 +1,5 @@
 (ns clj-google.drive
-  (:require [clj-google.oauth :as oauth]
-            [clj-google.core :refer [json]]
+  (:require [clj-google.data :refer [json]]
             [ring.util.codec :as codec]
             [clojure.string :as string]
             [clj-http.client :as client]
@@ -11,7 +10,7 @@
   [body]
   (let [translated (map (fn [x]
                           (let [[operator field value escape] x]
-                            (vector field (name operator) (if escape value (str "'" value "'" ))))) body)
+                            (vector field (name operator) (if escape value (str "'" value "'"))))) body)
         each-joined (map #(string/join " " %) translated)
         joined (string/join " and " each-joined)
         encoded (codec/url-encode joined)]
@@ -20,28 +19,28 @@
 
 (defn file
   [token file-id]
-  (json (str "https://www.googleapis.com/drive/v2/files/" file-id) token))
+  (json (str "https://www.googleapis.com/drive/v2/files/" file-id)))
 
 (defn files
   ([token query-list]
    (let [url "https://www.googleapis.com/drive/v2/files"
          fix-url (if (seq query-list) (str url "?q=" (query query-list)) url)]
-     (:items (json fix-url token))))
+     (:items (json fix-url))))
   ([token]
    (files token nil)))
 
 (defn children
   [token folder-id]
-  (:items (json (str "https://www.googleapis.com/drive/v2/files/" folder-id "/children") token)))
+  (:items (json (str "https://www.googleapis.com/drive/v2/files/" folder-id "/children"))))
 
 
 (defn download
   [token directory g-file]
   (let [file-stream-response (client/get
-                              (str "https://www.googleapis.com/drive/v2/files/" (:id g-file) "?alt=media")
-                              {:headers
-                               {:Authorization (str "Bearer " (:access_token token))}
-                               :as :stream})]
+                               (str "https://www.googleapis.com/drive/v2/files/" (:id g-file) "?alt=media")
+                               {:headers
+                                    {:Authorization (str "Bearer " (:access_token token))}
+                                :as :stream})]
     (try
       (do
         (java/copy (:body file-stream-response)
