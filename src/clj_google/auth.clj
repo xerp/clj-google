@@ -28,7 +28,7 @@
               :client_secret                   (:client-secret credentials)
               :redirect_uri                    (:redirect-uri credentials)
               :grant_type                      grant-type-str
-              (case (:type token)
+              (case (keyword (:type token))
                 :authorization-code :code
                 :refresh-token :refresh_token) (:code token)}]
     (try

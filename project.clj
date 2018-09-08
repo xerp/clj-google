@@ -1,4 +1,4 @@
-(defproject clj-google "0.2.6"
+(defproject clj-google "0.2.7"
   :description "Google APIs Toolbox"
   :url "https://github.com/xerp/clj-google"
   :license {:name "Eclipse Public License"
