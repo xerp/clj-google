@@ -1,6 +1,6 @@
 (ns clj-google.core-test
   (:require [clojure.test :refer :all]
-            [clj-google.data :refer :all]
+            [clj-google.core :refer :all]
             [clj-google.matrix :refer :all]))
 
 (deftest core-test

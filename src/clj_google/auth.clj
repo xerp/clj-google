@@ -2,21 +2,30 @@
   (:require [clj-http.client :as http]
             [cemerick.url :refer [url url-encode]]
             [clojure.string :as string]
-            [clojure.data.json :as json])
+            [clj-google.core :refer [json]]
+            [clojure.java.browse :refer [browse-url]])
   (:import (clojure.lang ExceptionInfo)))
 
 (def ^:dynamic *access-token* nil)
 
 (defn consent-url
+  "Get the google tokens, with user consent.
+
+  where:
+  - response-type could be :code or :token
+  - access-type could be :online or :offline"
+
   [credentials response-type access-type]
   (let [request-url "https://accounts.google.com/o/oauth2/v2/auth"
+        scopes (:scopes credentials)
+        scopes (if (vector? scopes) (string/join " " scopes) scopes)
         consent-url (assoc (url request-url)
                       :query {:client_id     (:client-id credentials)
                               :redirect_uri  (:redirect-uri credentials)
-                              :scope         (:scopes credentials)
+                              :scope         scopes
                               :response_type (name response-type)
                               :access_type   (name access-type)})]
-    (str consent-url)))
+    (browse-url (str consent-url))))
 
 
 
@@ -33,10 +42,9 @@
                 :refresh-token :refresh_token) (:code token)}]
     (try
       (if-let [response (http/post request-url {:form-params data})]
-        (let [response-body (:body response)
-              response-data (json/read-str response-body :key-fn keyword)]
+        (let [response-data (json (:body response))]
           response-data))
-      (catch ExceptionInfo e false))))
+      (catch ExceptionInfo _ false))))
 
 (defmacro with-token
   [credentials token & body]
