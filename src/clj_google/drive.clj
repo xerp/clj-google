@@ -1,5 +1,5 @@
 (ns clj-google.drive
-  (:require [clj-google.data :refer [json]]
+  (:require [clj-google.core :refer [json]]
             [ring.util.codec :as codec]
             [clojure.string :as string]
             [clj-http.client :as client]
