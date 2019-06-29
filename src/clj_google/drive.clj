@@ -2,7 +2,7 @@
   (:require [clj-google.core :refer [json]]
             [ring.util.codec :as codec]
             [clojure.string :as string]
-            [clj-http.client :as client]
+            [clj-http.client :as http]
             [clojure.java.io :as java]))
 
 
@@ -36,7 +36,7 @@
 
 (defn download
   [token directory g-file]
-  (let [file-stream-response (client/get
+  (let [file-stream-response (http/get
                                (str "https://www.googleapis.com/drive/v2/files/" (:id g-file) "?alt=media")
                                {:headers
                                     {:Authorization (str "Bearer " (:access_token token))}
